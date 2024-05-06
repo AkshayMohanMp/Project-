@@ -1,5 +1,11 @@
 const express = require("express");
+
+
+// json dat Input
 const {users}= require("./data/users.json")
+//  Importing routes
+const usersRouter = require("./rotes/users");
+const booksRouter = require("./rotes/books");
 const app = express();
 const PORT = 8081;
 app.use(express.json());
@@ -12,126 +18,10 @@ app.get("/", (req, res)=>{
     })
 })
 
-/*
-*route:/user
-*method:GET
-*description: Get all Users
-*access: Public
-*parameter: None
-*/ 
 
-app.get("/users",(req, res)=>{
-    res.status(200).json({
-        success: true,
-        data:users
-    })
-})
+app.use("/users", usersRouter);
+app.use("/books", booksRouter);
 
-/*
-*route:/users/:id
-*method:GET
-*description: Get Single Users by ID
-*access: Public
-*parameter: ID
-*/ 
-
-app.get("/users/:id",(req, res)=>{
-    const {id} =req.params;
-    const user = users.find((each)=> each.id ===id);
-    if(!user){
-        return res.status(404).json({
-            success: false,
-            message: "USER not Found for the givven ID"
-        })
-    }
-    return res.status(200).json({
-        sucess:true,
-        data: user
-    })
-})
-
-/*
-*route:/users
-*method:POST
-*description: Adding a new User
-*access: Public
-*parameter: no
-*/ 
-app.post("/users", (req, res)=>{
-    const{id, name, surname, email, subscriptionType, subscriptionDate } =req.body;
-    const user = users.find((each)=> each.id ===id);
-    if(user){
-        return res.status(404).json({
-            success: false,
-            message: "User with the sameid exist"
-        })
-    }
-    users.push(
-        {id, name, surname, email, subscriptionType, subscriptionDate}
-    )
-    return res.status(201).json({
-        success: true,
-        data: users
-    })
-})
-
-/*
-*route:/users/:id
-*method:PUT
-*description: Updating User
-*access: Public
-*parameter: ID
-*/ 
-app.put("/users/:id", (req,res)=>{
-    const {id}= req.params;
-    const {data} = req.body;
-    const user = users.find((each)=> each.id ===id);
-    if(!user){
-        return res.status(404).json({
-            success: false,
-            message: "User with the sameid exist"
-        })
-    }
-    const updateUser = users.map((each)=>{
-        if(each.id===id){
-            return{
-                ...each,
-                ...data
-            }
-        }
-        return each;
-    })
-    return res.status(202).json({
-        success: true,
-        data: updateUser
-    })
-})
-
-
-/*
-*route:/users/:id
-*method:DELETE
-*description: Delete a  User
-*access: Public
-*parameter: ID
-*/ 
-app.delete("/users/:id",(req,res)=>{
-    const {id}= req.params;
-   
-    const user = users.find((each)=> each.id ===id);
-    if(!user){
-        return res.status(404).json({
-            success: false,
-            message: "User with the sameid exist"
-        })
-    }
-    const index = users.indexOf(user);
-    users.splice(index,1);
-    return res.status(200).json({
-        success: true,
-        data: users
-    })
-})
 
 
 
