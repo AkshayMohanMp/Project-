@@ -1,6 +1,7 @@
 const express = require("express");
 
 const {books} =require("../data/books.json");
+const {users} =require("../data/users.json")
 
 
 const router = express.Router();
@@ -134,6 +135,43 @@ router.delete("/:id",(req,res)=>{
 })
 
 
+/*
+*route:/books/issued
+*method:GET
+*description: Get all Issued books
+*access: Public
+*parameter: none
+*/ 
+
+router.get("/issued/by-user", (req, res)=>{
+    const userWithIssuedBooks = users.find((each)=>{
+        if(each.issuedBook){
+            return each;}   
+    })
+    const issuedBooks =[];
+
+
+    userWithIssuedBooks.for((each)=>{
+        const book = books.find((book)=> book.id === each.issuedBook);
+
+        book.issuedBy = each.name;
+        book.issuedDate = each.issuedDate;
+        book.returnDate = each.returnDate;
+
+        issuedBooks.push(book);
+    })
+    if(issuedBooks.length===0){
+        return res.status(404).json({
+            success: false,
+            message: "No Books Issued"
+        })
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: issuedBooks
+    })
+})
 
 
 module.exports = router;
